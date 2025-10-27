@@ -1,0 +1,5 @@
+{
+  "name": "Provador Virtual com IA",
+  "description": "Faça o upload da foto de uma peça de roupa e nossa IA irá gerar uma imagem de uma modelo profissional vestindo-a, pronta para sua loja online.",
+  "requestFramePermissions": []
+}
