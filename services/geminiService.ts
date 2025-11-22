@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Modality } from "@google/genai";
 import { ImageMimeType } from '../types';
 
@@ -56,23 +57,28 @@ export const generateModelImage = async (
   clothingBase64: string,
   mimeType: ImageMimeType,
   prompt: string,
-  background: 'estúdio' | 'loja' | 'jardim',
+  background: 'estúdio' | 'loja' | 'jardim' | 'custom',
   keepAuxiliaryLook: boolean,
+  customBackground?: string,
   baseModelBase64?: string
 ): Promise<string> => {
   try {
     let sceneryDescription = '';
-    switch (background) {
-      case 'loja':
-        sceneryDescription = 'no interior de uma loja de roupas chique e moderna';
-        break;
-      case 'jardim':
-        sceneryDescription = 'em um jardim exuberante com luz natural';
-        break;
-      case 'estúdio':
-      default:
-        sceneryDescription = 'em um fundo de estúdio fotográfico profissional branco';
-        break;
+    if (background === 'custom' && customBackground) {
+        sceneryDescription = customBackground;
+    } else {
+        switch (background) {
+        case 'loja':
+            sceneryDescription = 'no interior de uma loja de roupas chique e moderna';
+            break;
+        case 'jardim':
+            sceneryDescription = 'em um jardim exuberante com luz natural';
+            break;
+        case 'estúdio':
+        default:
+            sceneryDescription = 'em um fundo de estúdio fotográfico profissional branco';
+            break;
+        }
     }
     
     const parts: any[] = [];
@@ -168,5 +174,26 @@ O resultado deve ser a mesma imagem, mas com um look auxiliar diferente.
             throw error;
         }
         throw new Error("Falha ao se comunicar com a IA para trocar o look. Tente novamente.");
+    }
+};
+
+export const generateRandomPrompt = async (prompt: string): Promise<string> => {
+    try {
+        const ai = new GoogleGenAI({ apiKey: API_KEY });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+        });
+        const text = response.text.trim().replace(/"/g, ''); // Remove quotes
+        if (!text) {
+            throw new Error("A IA retornou uma resposta vazia.");
+        }
+        return text;
+    } catch (error) {
+        console.error("Error calling Gemini API for random prompt generation:", error);
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error("Falha ao gerar sugestão da IA.");
     }
 };

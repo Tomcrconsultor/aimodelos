@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Spinner } from './Spinner';
 import { GeneratedImageState } from '../App';
